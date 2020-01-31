@@ -1,0 +1,30 @@
+---
+
+# Sendmail is already disabled by default in a FreeNAS jail, so we just have to
+# setup nullmailer and we are good.
+
+- name: Configure nullmailer
+  template:
+    src: ../templates/{{ item }}.j2
+    dest: /usr/local/etc/nullmailer/{{ item }}
+  loop:
+    - adminaddr
+    - me
+    - remotes
+    - sendtimeout
+  notify: Restart nullmailer
+
+- name: Set nullmailer as system mailer
+  template:
+    src: ../templates/mailer.conf.j2
+    dest: /etc/mail/mailer.conf
+
+- name: Enable nullmailer
+  service:
+    name: nullmailer
+    enabled: yes
+
+- name: Start nullmailer
+  service:
+    name: nullmailer
+    state: started

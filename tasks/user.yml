@@ -1,0 +1,33 @@
+---
+
+- name: Add user {{ backup_srv__backup_user }}
+  user:
+    name: "{{ backup_srv__backup_user }}"
+    comment: Backups user
+    home: /home/{{ backup_srv__backup_user }}
+    create_home: yes
+    shell: /bin/sh
+    system: yes
+
+- name: Generate SSH key for user {{ backup_srv__backup_user }}
+  user:
+    name: "{{ backup_srv__backup_user }}"
+    generate_ssh_key: yes
+    ssh_key_type: ed25519
+    ssh_key_comment: backup@{{ inventory_hostname }}
+  register: backup_srv__reg_sshkey
+
+- name: Stop execution if wrong SSH key configured for clients
+  # Note: we need to strip SSH keys of their comments to properly compare them.
+  vars:
+    vars_stripped_pubkey: "{{ backup_clt__srv_ssh_pubkey.split(' ')[0:2] | join(' ') }}"
+    generated_stripped_pubkey: "{{ backup_srv__reg_sshkey.ssh_public_key.split(' ')[0:2] | join(' ') }}"
+  assert:
+    that:
+      - vars_stripped_pubkey == generated_stripped_pubkey
+    msg: >
+      The server SSH key used by the user {{ backup_srv__backup_user }} to
+      initiate backups is not the same as the public SSH key configured on the
+      clients' authorized_keys, so backups won't work! Change the variable
+      `backup_clt__srv_ssh_pubkey` in `group_vars/all` to the following value
+      to solve the issue: '{{ backup_srv__reg_sshkey.ssh_public_key }}'

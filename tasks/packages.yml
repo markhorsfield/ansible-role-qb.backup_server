@@ -1,0 +1,6 @@
+---
+
+- name: Install packages
+  pkgng:
+    name: "{{ backup_srv__vars_packages }}"
+    state: present

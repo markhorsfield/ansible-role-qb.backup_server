@@ -1,0 +1,17 @@
+---
+
+- import_tasks: packages.yml
+
+- import_tasks: user.yml
+
+- import_tasks: directories.yml
+
+- import_tasks: sshd.yml
+
+- import_tasks: setup_script.yml
+
+- import_tasks: config.yml
+
+- import_tasks: mailer.yml
+
+- import_tasks: cron.yml

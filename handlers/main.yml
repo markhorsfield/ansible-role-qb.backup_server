@@ -1,0 +1,11 @@
+---
+
+- name: Restart sshd
+  service:
+    name: sshd
+    state: restarted
+
+- name: Restart nullmailer
+  service:
+    name: nullmailer
+    state: restarted

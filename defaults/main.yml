@@ -1,0 +1,32 @@
+---
+
+backup_srv__backup_user: backup
+
+backup_srv__cron_minute: '0'
+backup_srv__cron_hour: '0'
+backup_srv__cron_day: "*"
+backup_srv__cron_month: "*"
+backup_srv__cron_weekday: "*"
+
+# All paths must be without spaces and end without /
+
+# Paths shared with the client role
+backup_srv__backup_dest_dir: /mnt/backup
+backup_srv__host_config_dir: /etc/backup/host
+# Other paths
+backup_srv__config_dir: /etc/backup
+backup_srv__log_dir: /var/log/backup
+backup_srv__lock_dir: /var/tmp/backup
+
+# Repo URL to qb.backup
+backup_srv__server_script_repo: https://github.com/quarkslab/qb.backup.git
+
+# SMTP server
+backup_srv__mail_host:
+backup_srv__mail_port: 25
+backup_srv__mail_from_addr: backup@{{ inventory_hostname }}
+backup_srv__mail_to_addrs: []
+backup_srv__mail_subject_status: "Backup $STATUS with $SUCCEEDED/$TOTAL OK in $RUNTIME"
+backup_srv__mail_subject_error: "Backup error log"
+
+backup_srv__default_ssh_port: 22

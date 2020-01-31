@@ -1,0 +1,21 @@
+---
+
+- name: Clone backup script repository
+  git:
+    repo: "{{ backup_srv__server_script_repo }}"
+    dest: /home/{{ backup_srv__backup_user }}/backup_script
+    version: master
+    clone: yes
+    depth: 1
+    force: yes
+  register: backup_srv__reg_backup_script_clone
+
+- name: Install the backup script
+  pip:
+    name: /home/{{ backup_srv__backup_user }}/backup_script
+    state: latest
+    virtualenv: /home/{{ backup_srv__backup_user }}/backup_venv
+    virtualenv_python: "{{ backup_srv__vars_python_path }}"
+  # This is never idempotent because of `latest`, so we reinstall the backup
+  # script only if the repo content changed.
+  when: backup_srv__reg_backup_script_clone.changed

@@ -1,0 +1,18 @@
+---
+
+# {{ ansible_managed }}
+
+logging:
+  filename: {{ backup_srv__log_dir }}/backup.log
+  mail:
+    mailhost: [{{ backup_srv__mail_host }}, {{ backup_srv__mail_port }}]
+    fromaddr: {{ backup_srv__mail_from_addr }}
+    toaddrs: {{ backup_srv__mail_to_addrs | to_json }}
+    subject_status: {{ backup_srv__mail_subject_status }}
+    subject_error: {{ backup_srv__mail_subject_error }}
+
+default:
+  port: {{ backup_srv__default_ssh_port }}
+  lock: {{ backup_srv__lock_dir }}/{}.lock
+
+hosts: !include {{ backup_srv__host_config_dir }}/*.yml

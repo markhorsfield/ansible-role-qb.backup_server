@@ -1,0 +1,6 @@
+---
+
+- name: Write backup script config
+  template:
+    src: ../templates/backup.yml.j2
+    dest: "{{ backup_srv__config_dir }}/backup.yml"

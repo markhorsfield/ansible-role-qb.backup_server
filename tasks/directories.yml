@@ -1,0 +1,46 @@
+---
+
+# This folder will be an existing bind mount of a ZFS Dataset, so it might not
+# be empty even if we recreate the jail.
+# We set its permissions to permissions larger than necessary (read access for
+# all) to make it easier to mount it over NFS or anything else in case we need
+# to recover data from the Dataset without interacting with the jail before.
+- name: Change permissions of destination dir for backups to 755
+  file:
+    path: "{{ backup_srv__backup_dest_dir }}"
+    state: directory
+    mode: 0755 # octal
+
+# The files in the ZFS Dataset might have a previous "wrong" owner/group.
+- name: Change owner of content of destination dir for backups
+  file:
+    path: "{{ backup_srv__backup_dest_dir }}"
+    state: directory
+    owner: "{{ backup_srv__backup_user }}"
+    group: "{{ backup_srv__backup_user }}"
+    recurse: yes
+
+# We don't want all the dirs to be chowned to the backup user: we want it to be
+# able to access them, but only be able to write in some of them.
+
+- name: Create read-only dirs for backups
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: "{{ backup_srv__backup_user }}"
+    state: directory
+    mode: 0750 # octal
+  loop:
+    - "{{ backup_srv__config_dir }}"
+    - "{{ backup_srv__host_config_dir }}"
+
+- name: Create writable dirs for backups
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ backup_srv__backup_user }}"
+    group: "{{ backup_srv__backup_user }}"
+    mode: 0750 # octal
+  loop:
+    - "{{ backup_srv__log_dir }}"
+    - "{{ backup_srv__lock_dir }}"

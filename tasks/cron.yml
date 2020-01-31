@@ -1,0 +1,42 @@
+---
+
+- name: Set destination email for Cron tasks
+  cron:
+    env: yes
+    name: MAILTO
+    value: "{{ backup_srv__mail_to_addrs | join(',') }}"
+    user: "{{ backup_srv__backup_user }}"
+
+- name: Set LANG for Cron tasks
+  cron:
+    env: yes
+    name: LANG
+    value: en_US.UTF-8
+    user: "{{ backup_srv__backup_user }}"
+
+- name: Set LC_ALL for Cron tasks
+  cron:
+    env: yes
+    name: LC_ALL
+    value: en_US.UTF-8
+    user: "{{ backup_srv__backup_user }}"
+
+# Note that the backup script outputs debug-level logs in its console, which
+# might be a bit too much to receive by email.
+# Since the script already sends an email with the backup status of each host,
+# we can just ignore stdout, and only send an email in case we have some
+# messages in stderr.
+- name: Set cron task to launch backups
+  cron:
+    name: Backup script
+    minute: "{{ backup_srv__cron_minute }}"
+    hour: "{{ backup_srv__cron_hour }}"
+    day: "{{ backup_srv__cron_day }}"
+    month: "{{ backup_srv__cron_month }}"
+    weekday: "{{ backup_srv__cron_weekday }}"
+    job: >
+      /home/{{ backup_srv__backup_user }}/backup_venv/bin/python
+      /home/{{ backup_srv__backup_user }}/backup_script/main.py run
+      --conf "{{ backup_srv__config_dir }}/backup.yml"
+      >/dev/null
+    user: "{{ backup_srv__backup_user }}"

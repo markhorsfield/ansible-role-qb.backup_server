@@ -1,0 +1,12 @@
+---
+
+backup_srv__vars_python_path: /usr/local/bin/python3.7
+
+backup_srv__vars_packages:
+  - git
+  - nullmailer # for Cron emails
+  - py37-borgbackup
+  - py37-pip
+  - py37-setuptools
+  - py37-virtualenv
+  - vim-console

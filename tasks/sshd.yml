@@ -1,0 +1,23 @@
+---
+
+- name: Generate sshd keys
+  command: /etc/rc.d/sshd onekeygen
+  args:
+    creates: /etc/ssh/ssh_host_ed25519_key
+
+- name: Write sshd config
+  template:
+    src: ../templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    validate: sshd -f %s -T
+  notify: Restart sshd
+
+- name: Enable sshd
+  service:
+    name: sshd
+    enabled: yes
+
+- name: Start sshd
+  service:
+    name: sshd
+    state: started
